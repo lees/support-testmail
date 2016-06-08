@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content%}
+{% for issue in issues %}
+	<p><b>{{ issue.creation_date }} - {{ issue.subject }}</b></p>
+	<p>{{ issue.text }}</p>
+{% endfor %}
+{% endblock %}
