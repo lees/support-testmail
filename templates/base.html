@@ -11,6 +11,8 @@
 		<h1>Поддержка</h1>
 		<p><a href="/">Главная</a></p>
 		{% block content %}
+		<p>Привет, {{ user }}. Auth: {{user.is_authenticated}}, Staff : {{user.is_staff}} </p>
+
 		<p><a href="/admin">Админка</a></p>
 		<p><a href="{% url 'my-issues' %}">my_issues</a></p>
 		<p><a href="{% url 'unresolved-issues' %}">unresolved_issues</a></p>
