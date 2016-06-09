@@ -10,12 +10,12 @@
 	<div class="container">
 		<h1>Поддержка</h1>
 		<p><a href="/">Главная</a></p>
-		{% block content %} 
+		{% block content %}
 		<p><a href="/admin">Админка</a></p>
-		<p><a href="/my_issues">my_issues</a></p>
-		<p><a href="/unresolved_issues">unresolved_issues</a></p>
-		<p><a href="/issue/123">issue</a></p>
-		<p><a href="/create_issue">create_issue</a></p>
+		<p><a href="{% url 'my-issues' %}">my_issues</a></p>
+		<p><a href="{% url 'unresolved-issues' %}">unresolved_issues</a></p>
+		<p><a href="{% url 'issue' '123' %}">issue</a></p>
+		<p><a href="{% url 'create-issue' %}">create_issue</a></p>
 		{% endblock %}
 	</div>
 </body>
