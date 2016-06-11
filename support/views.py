@@ -2,6 +2,7 @@
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST, require_GET
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from datetime import datetime
@@ -37,10 +38,22 @@ def root(request):
 @require_GET
 @login_required
 def my_issues(request):
-    #TODO pagination
+    # TODO формы списка обращений не должно быть две. это одна форма
+    if request.user.is_staff:
+        HttpResponseRedirect(reverse("unresolved-issues"))
+    issues = Issue.objects.filter(author = request.user.username)
+    issues = issues.order_by('-creation_date')
+    issues = paginate(request, issues)
+    issues.paginator.baseurl = reverse("unresolved-issues")+'?page='
+    context = {
+        'issues': issues,
+        'paginator': issues.paginator
+    }
+    return render(request, 'issues.html',context)
     return render(request, 'issues.html',{'issues': example})
 
 @require_GET
+@login_required
 def unresolved_issues(request):
     issues = Issue.objects.filter(solved = False)
     issues = issues.order_by('-creation_date')
@@ -85,3 +98,8 @@ def register(request):
     return render(request, "registration/register.html", {
         'form': form,
     })
+
+def logout(request):
+    #logout(request)
+    print('in')
+    return HttpResponseRedirect("/")
