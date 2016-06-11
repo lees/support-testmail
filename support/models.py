@@ -2,7 +2,7 @@
 
 from django.db import models
 
-class Request(models.Model):
+class Issue(models.Model):
     subject = models.CharField(max_length=255)
     creation_date = models.DateTimeField(u'Дата создания')
     text = models.TextField()

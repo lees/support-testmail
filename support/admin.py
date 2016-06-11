@@ -1,6 +1,6 @@
 from django.contrib import admin
-from support.models import Request
+from support.models import Issue
 
-class RequestAdmin(admin.ModelAdmin):
+class IssueAdmin(admin.ModelAdmin):
     pass
-admin.site.register(Request, RequestAdmin)
+admin.site.register(Issue, IssueAdmin)

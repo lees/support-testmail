@@ -7,6 +7,8 @@ from django.shortcuts import render
 from datetime import datetime
 from django.core.mail import send_mail
 
+from .models import Issue
+
 example = [
 	{
 		"creation_date": datetime.now(),
