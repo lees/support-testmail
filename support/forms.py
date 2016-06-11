@@ -5,9 +5,10 @@ from .models import Issue
 from django.contrib.auth.models import User
 
 class CreateIssueForm(forms.Form):
-    author_email = forms.EmailField(max_length=100)
-    subject = forms.CharField(max_length=255)
-    text = forms.CharField(widget=forms.Textarea)
+    author_email = forms.EmailField(label = u'Электронный адрес для оповещения',max_length = 100)
+    author = forms.CharField(max_length=255, widget=forms.HiddenInput)
+    subject = forms.CharField(label = 'Тема', max_length=255)
+    text = forms.CharField(label = "Текст", widget=forms.Textarea)
 
     def save(self):
         post = Issue(**self.cleaned_data)

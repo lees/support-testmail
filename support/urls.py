@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^accounts/register', views.register, name='register'),
-    url(r'^accounts/logout', views.logout, name='logout'),
+    url(r'^accounts/logout', views.logoutview, name='logout'),
     #url(r'^accounts/login', views.logout, name='logout'),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     #url(r'^', include('django.contrib.auth.urls')),

@@ -33,6 +33,7 @@ def paginate(request, qs):
 
 @require_GET
 def root(request):
+    # TODO Редирект. Авторизованного на список, неавторизованного на создание обращения
     return render(request,"base.html",{'user': request.user})
 
 @require_GET
@@ -50,7 +51,6 @@ def my_issues(request):
         'paginator': issues.paginator
     }
     return render(request, 'issues.html',context)
-    return render(request, 'issues.html',{'issues': example})
 
 @require_GET
 @login_required
@@ -78,13 +78,23 @@ def create_issue(request):
     if request.method == "POST":
         form = CreateIssueForm(request.POST)
         if form.is_valid():
+            # TODO для неавторизованного пользователя нужно запоминать email в сессии
             issue = form.save()
+            request.session['email'] = issue.author_email
             url = issue.get_absolute_url()
             return HttpResponseRedirect(url)
         else:
             render(request, 'create_issue.html', {'form': form})
     else:
-        form = CreateIssueForm()
+        if request.user.is_authenticated:
+            initial = {
+                "author_email":request.user.email,
+                "author": request.user.username
+                }
+        else:
+            initial = {
+                "author_email": request.session.get("email", "")}
+        form = CreateIssueForm(initial = initial)
     return render(request, 'create_issue.html', {'form': form})
 
 def register(request):
@@ -99,7 +109,6 @@ def register(request):
         'form': form,
     })
 
-def logout(request):
-    #logout(request)
-    print('in')
+def logoutview(request):
+    logout(request)
     return HttpResponseRedirect("/")
