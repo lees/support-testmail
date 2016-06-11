@@ -17,5 +17,5 @@ class Issue(models.Model):
         return self.subject
 
     def get_absolute_url(self):
-        #todo reverse
-        return "/issue/%i/" % self.id
+        # reverse приводит к циклическому импорту
+        return "/issue/%s" % self.id

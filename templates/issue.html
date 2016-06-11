@@ -1,6 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content%}
-	<h3>{{ id }}: {{ issue.creation_date }} - {{ issue.subject }}</h3>
-	<p>{{ issue.text }}</p>
+	<h3>{{ issue.subject }} <small>{{ issue.creation_date }}</small> </h3>
+
+	<blockquote>
+		{{ issue.text |linebreaks }}
+	</blockquote>
+
+	{% if issue.solved %}
+		<b> Закрыто: {{ issue.solved_date }}, сотрудником: {{issue.solved_by}}  </b>
+		<blockquote>
+				{{issue.response_text |linebreaks}}
+		</blockquote>
+	{% else %}
+		<b> На ваше обращение еще нет ответа </b>
+	{% endif %}
 {% endblock %}

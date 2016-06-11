@@ -1,8 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content%}
+
+<h2>Список незакрытых обращений</h2>
+
 {% for issue in issues %}
-	<p><b>{{ issue.creation_date }} - {{ issue.subject }}</b></p>
-	<p>{{ issue.text }}</p>
+	<p>
+		<a href="{{ issue.get_absolute_url }}"> {{ issue.creation_date }} - {{ issue.subject }}</b></a>
+	</p>
 {% endfor %}
+
+<nav><ul class="pagination">
+{% for p in paginator.page_range %}
+  {% if p == issues.number %}
+  <li class="active">
+  {% else %}
+  <li>
+  {% endif %}
+    <a href="{{ paginator.baseurl }}{{ p }}">
+    {{ p }}</a>
+</li>
+{% endfor %}
+</ul></nav>
+
 {% endblock %}
