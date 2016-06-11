@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
@@ -9,7 +9,7 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from .models import Issue
-from .forms import CreateIssueForm
+from .forms import CreateIssueForm, RegisterForm
 from django.views import generic
 
 def paginate(request, qs):
@@ -74,9 +74,14 @@ def create_issue(request):
         form = CreateIssueForm()
     return render(request, 'create_issue.html', {'form': form})
 
-'''
-def create_issue(request):
-    #TODO mail-from from config
-    send_mail('subj', 'message', 'from@support.mail', ['to@user.ru'], fail_silently = True)
-    return HttpResponse('create_issue')
-'''
+def register(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            return HttpResponseRedirect("/")
+    else:
+        form = RegisterForm()
+    return render(request, "registration/register.html", {
+        'form': form,
+    })

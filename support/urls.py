@@ -5,6 +5,7 @@ import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    url(r'^accounts/register', views.register, name='register'),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^', include('django.contrib.auth.urls')),
     #url(r'^accounts/login/$', auth_views.login),
