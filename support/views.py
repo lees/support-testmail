@@ -9,6 +9,8 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from .models import Issue
+from .forms import CreateIssueForm
+from django.views import generic
 
 def paginate(request, qs):
     try:
@@ -35,26 +37,46 @@ def root(request):
 @require_GET
 @login_required
 def my_issues(request):
-	#TODO pagination
-	return render(request, 'issues.html',{'issues': example})
+    #TODO pagination
+    return render(request, 'issues.html',{'issues': example})
 
 @require_GET
 def unresolved_issues(request):
-	issues = Issue.objects.filter(solved = False)
-	issues = paginate(request, issues)
-	issues.paginator.baseurl = reverse("unresolved-issues")+'?page='
-	context = {
-		'issues': issues,
-		'paginator': issues.paginator
-	}
-	return render(request, 'issues.html',context)
+    issues = Issue.objects.filter(solved = False)
+    issues = issues.order_by('-creation_date')
+    issues = paginate(request, issues)
+    issues.paginator.baseurl = reverse("unresolved-issues")+'?page='
+    context = {
+        'issues': issues,
+        'paginator': issues.paginator
+    }
+    return render(request, 'issues.html',context)
 
 @require_GET
 def issue(request, issue_id):
-	issue = get_object_or_404(Issue, id = issue_id)
-	return render(request, 'issue.html',{'issue': issue})
+    issue = get_object_or_404(Issue, id = issue_id)
+    return render(request, 'issue.html',{'issue': issue})
+
+class IssueView(generic.DetailView):
+    model = Issue
+    template_name = 'issue.html'
 
 def create_issue(request):
-	#TODO mail-from from config
-	send_mail('subj', 'message', 'from@support.mail', ['to@user.ru'], fail_silently = True)
-	return HttpResponse('create_issue')
+    if request.method == "POST":
+        form = CreateIssueForm(request.POST)
+        if form.is_valid():
+            issue = form.save()
+            url = issue.get_absolute_url()
+            return HttpResponseRedirect(url)
+        else:
+            render(request, 'create_issue.html', {'form': form})
+    else:
+        form = CreateIssueForm()
+    return render(request, 'create_issue.html', {'form': form})
+
+'''
+def create_issue(request):
+    #TODO mail-from from config
+    send_mail('subj', 'message', 'from@support.mail', ['to@user.ru'], fail_silently = True)
+    return HttpResponse('create_issue')
+'''

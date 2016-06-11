@@ -4,7 +4,7 @@ from django.db import models
 
 class Issue(models.Model):
     subject = models.CharField(max_length=255)
-    creation_date = models.DateTimeField(u'Дата создания')
+    creation_date = models.DateTimeField(u'Дата создания',auto_now_add=True)
     text = models.TextField()
     author = models.CharField(max_length=255, blank=True)
     author_email = models.EmailField()
