@@ -4,10 +4,13 @@ from django import forms
 from .models import Issue
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.core.mail import send_mail
+#from support.settings import settings
+from django.conf import settings
 
 class CreateIssueForm(forms.Form):
     author_email = forms.EmailField(label = u'Электронный адрес для оповещения',max_length = 100)
-    author = forms.CharField(max_length=255, widget=forms.HiddenInput)
+    author = forms.CharField(max_length=255, widget=forms.HiddenInput, required = False)
     subject = forms.CharField(label = 'Тема', max_length=255)
     text = forms.CharField(label = "Текст", widget=forms.Textarea)
 
@@ -38,6 +41,16 @@ class PostAnswerForm(forms.Form):
         issue.solved = True
         issue.solved_date = datetime.now()
         issue.save()
+
+        # TODO Обработать ошибку отправки почты (сделать очередь заданий)
+        # TODO Взять почту из пользователя?
+        subject = u"Получен ответ на ваше обращение: %s " % issue.subject
+        send_mail(
+            subject,
+            issue.response_text,
+            settings.FROM_EMAIL,
+            [issue.author_email],
+            fail_silently=False)
         return issue
 
 

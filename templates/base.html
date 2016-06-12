@@ -24,9 +24,10 @@
 				</div>
 				<div id="navbar" class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
-						<li><a class="nav-button" href="{% url 'create-issue' %}">Создать обращение</a></li>
 						{% if user.is_staff %}
 							<li><a class="nav-button" href="/admin/">Админка</a></li>
+            {% else %}
+              <li><a class="nav-button" href="{% url 'create-issue' %}">Создать обращение</a></li>
 						{% endif %}
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
@@ -54,8 +55,7 @@
 			<p>Привет, {{ user }}. Auth: {{user.is_authenticated}}, Staff : {{user.is_staff}} </p>
 
 			<p><a href="/admin">Админка</a></p>
-			<p><a href="{% url 'my-issues' %}">my_issues</a></p>
-			<p><a href="{% url 'unresolved-issues' %}">unresolved_issues</a></p>
+			<p><a href="{% url 'issues' %}">issues</a></p>
 			<p><a href="{% url 'issue' '123' %}">issue</a></p>
 			<p><a href="{% url 'create-issue' %}">create_issue</a></p>
 			<p><a href="{% url 'register' %}">register</a></p>

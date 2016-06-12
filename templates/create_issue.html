@@ -8,13 +8,18 @@
 
 <form class="form-horizontal" method="post" action="{% url 'create-issue' %}">
   {% csrf_token %}
-<fieldset>
+  <fieldset>
     {% for field in form %}
-      <div class="control-group
-        {% if field.errors %}has-error{% endif %}">
-        <label class="control-label">{{ field.label }}</label>
-        <div class="controls">{{ field }}</div>
-</div>
+      {% if field.is_hidden %}
+        <div class="control-group">
+          <div class="controls">{{ field }}</div>
+        </div>
+      {% else %}
+        <div class="control-group">
+          <label class="control-label">{{ field.label }}</label>
+          <div class="controls">{{ field }}</div>
+        </div>
+      {% endif %}
     {% endfor %}
   </fieldset>
   <br />

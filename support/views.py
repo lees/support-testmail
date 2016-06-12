@@ -5,13 +5,20 @@ from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
-from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
 from .models import Issue
 from django.db.models import Q
 from .forms import CreateIssueForm, RegisterForm, SearchIssueForm, PostAnswerForm
 from django.views import generic
+
+@require_GET
+def root(request):
+    #return render(request,"base.html",{'user': request.user})
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('create-issue'))
+    return HttpResponseRedirect(reverse('issues'))
+
 
 def paginate(request, qs):
     try:
@@ -31,36 +38,15 @@ def paginate(request, qs):
         page = paginator.page(paginator.num_pages)
     return page
 
-@require_GET
-def root(request):
-    # TODO Редирект. Авторизованного на список, неавторизованного на создание обращения
-    return render(request,"base.html",{'user': request.user})
-
-@require_GET
-@login_required
-def my_issues(request):
-    # TODO формы списка обращений не должно быть две. это одна форма
-    if request.user.is_staff:
-        HttpResponseRedirect(reverse("unresolved-issues"))
-    issues = Issue.objects.filter(author = request.user.username)
-    issues = issues.order_by('-creation_date')
-    issues = paginate(request, issues)
-    issues.paginator.baseurl = reverse("unresolved-issues")+'?page='
-    context = {
-        'issues': issues,
-        'paginator': issues.paginator
-    }
-    return render(request, 'issues.html',context)
-
 def get_base_url(params):
     if 'page' in params:
         params.pop('page')
     if params:
-        baseurl = reverse("unresolved-issues")
+        baseurl = reverse("issues")
         baseurl += '?' + params.urlencode()
         baseurl += '&page='
     else:
-        baseurl = reverse("unresolved-issues")+'?page='
+        baseurl = reverse("issues")+'?page='
     return baseurl
 
 def parse_search_params(params):
@@ -78,8 +64,11 @@ def parse_search_params(params):
 
 @require_GET
 @login_required
-def unresolved_issues(request):
-    issues = parse_search_params(request.GET)
+def issues(request):
+    if request.user.is_staff:
+        issues = parse_search_params(request.GET)
+    else:
+        issues = Issue.objects.filter(author = request.user.username)
     issues = issues.order_by('-creation_date')
     issues = paginate(request, issues)
     issues.paginator.baseurl = get_base_url(request.GET.copy())
@@ -97,21 +86,23 @@ def issue(request, pk):
     form = PostAnswerForm( initial = {'issue_id': pk, 'solved_by': request.user.username})
     return render(request, 'issue.html',{'issue': issue, 'form': form})
 
-require_POST
+@require_POST
 def response_issue(request):
     form = PostAnswerForm(request.POST)
     if form.is_valid():
-        print(1)
         issue = form.save()
-        print(issue)
         if issue:
             return HttpResponseRedirect(issue.get_absolute_url())
     return HttpResponseRedirect('/')
 
 def create_issue(request):
     if request.method == "POST":
+        print(1)
         form = CreateIssueForm(request.POST)
+        print(2)
+        print(form.errors)
         if form.is_valid():
+            print(3)
             issue = form.save()
             request.session['email'] = issue.author_email
             url = issue.get_absolute_url()
