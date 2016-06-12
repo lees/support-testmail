@@ -5,13 +5,12 @@ from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
-from datetime import datetime
 from django.core.mail import send_mail
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
 from .models import Issue
 from django.db.models import Q
-from .forms import CreateIssueForm, RegisterForm, SearchIssueForm
+from .forms import CreateIssueForm, RegisterForm, SearchIssueForm, PostAnswerForm
 from django.views import generic
 
 def paginate(request, qs):
@@ -93,13 +92,21 @@ def unresolved_issues(request):
     return render(request, 'issues.html',context)
 
 @require_GET
-def issue(request, issue_id):
-    issue = get_object_or_404(Issue, id = issue_id)
-    return render(request, 'issue.html',{'issue': issue})
+def issue(request, pk):
+    issue = get_object_or_404(Issue, id = pk)
+    form = PostAnswerForm( initial = {'issue_id': pk, 'solved_by': request.user.username})
+    return render(request, 'issue.html',{'issue': issue, 'form': form})
 
-class IssueView(generic.DetailView):
-    model = Issue
-    template_name = 'issue.html'
+require_POST
+def response_issue(request):
+    form = PostAnswerForm(request.POST)
+    if form.is_valid():
+        print(1)
+        issue = form.save()
+        print(issue)
+        if issue:
+            return HttpResponseRedirect(issue.get_absolute_url())
+    return HttpResponseRedirect('/')
 
 def create_issue(request):
     if request.method == "POST":

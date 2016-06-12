@@ -2,7 +2,7 @@
 
 {% block content%}
 
-<h2>Список незакрытых обращений</h2>
+<h2>Список обращений</h2>
 
 
 <form class="form-inline">
@@ -16,9 +16,31 @@
 </form>
 
 {% for issue in issues %}
-	<p>
-		<a href="{{ issue.get_absolute_url }}"> {{ issue.creation_date }} - {{ issue.subject }}</b></a>
-	</p>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        <a href="{{ issue.get_absolute_url }}">
+          Тема: {{ issue.subject }}
+          От:
+          {% if issue.author %}
+            {{issue.author}}:
+          {% endif %}
+          {{issue.author_email}}.
+          {{ issue.creation_date }} - {{ issue.subject }}</a>
+      </h3>
+    </div>
+    <div class="panel-body">
+      <b>Текст обращения:</b>
+      {{ issue.text |linebreaks }}
+    </div>
+    {% if issue.solved %}
+      <b> Закрыто: {{ issue.solved_date }}, сотрудником: {{issue.solved_by}}  </b>
+      <blockquote>
+          {{issue.response_text |linebreaks}}
+      </blockquote>
+    {% endif %}
+  </div>
+
 {% endfor %}
 
 <nav><ul class="pagination">
