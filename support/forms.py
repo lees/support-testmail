@@ -10,10 +10,18 @@ class CreateIssueForm(forms.Form):
     subject = forms.CharField(label = 'Тема', max_length=255)
     text = forms.CharField(label = "Текст", widget=forms.Textarea)
 
+    # TODO Сделать проверку формы на заполнения email
+    # TODO Нужно подредактировать саму форму, чтобы там не было поля email для авторизованного
+
     def save(self):
         post = Issue(**self.cleaned_data)
         post.save()
         return post
+
+class SearchIssueForm(forms.Form):
+    date = forms.DateField(label=u"Дата обращения")
+    author = forms.CharField(label=u"Автор обращения", max_length=255)
+    show_closed = forms.BooleanField(label=u"Показывать завершенные")
 
 class RegisterForm(forms.Form):
     name = forms.CharField(max_length=100)

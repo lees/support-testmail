@@ -2,6 +2,7 @@
 
 {% block content%}
 	<h3>{{ issue.subject }} <small>{{ issue.creation_date }}</small> </h3>
+  <h3>{{ issue.author }} <small>{{ issue.author_email }}</small> </h3>
 
 	<blockquote>
 		{{ issue.text |linebreaks }}

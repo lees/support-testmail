@@ -10,7 +10,8 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from .models import Issue
-from .forms import CreateIssueForm, RegisterForm
+from django.db.models import Q
+from .forms import CreateIssueForm, RegisterForm, SearchIssueForm
 from django.views import generic
 
 def paginate(request, qs):
@@ -52,16 +53,42 @@ def my_issues(request):
     }
     return render(request, 'issues.html',context)
 
+def get_base_url(params):
+    if 'page' in params:
+        params.pop('page')
+    if params:
+        baseurl = reverse("unresolved-issues")
+        baseurl += '?' + params.urlencode()
+        baseurl += '&page='
+    else:
+        baseurl = reverse("unresolved-issues")+'?page='
+    return baseurl
+
+def parse_search_params(params):
+    issues = Issue.objects.all()
+    show_closed = params.get('show_closed',None)
+    if not (show_closed and show_closed == 'on'):
+        issues = issues.filter(solved = False)
+    author = params.get('author', None)
+    if author:
+        issues = issues.filter(Q(author__icontains = author) | Q(author_email__icontains = author))
+    date = params.get('date', None)
+    if date:
+        issues = issues.filter(creation_date__date = date)
+    return issues
+
 @require_GET
 @login_required
 def unresolved_issues(request):
-    issues = Issue.objects.filter(solved = False)
+    issues = parse_search_params(request.GET)
     issues = issues.order_by('-creation_date')
     issues = paginate(request, issues)
-    issues.paginator.baseurl = reverse("unresolved-issues")+'?page='
+    issues.paginator.baseurl = get_base_url(request.GET.copy())
+    form = SearchIssueForm(initial = request.GET)
     context = {
         'issues': issues,
-        'paginator': issues.paginator
+        'paginator': issues.paginator,
+        'form': form
     }
     return render(request, 'issues.html',context)
 
@@ -78,7 +105,6 @@ def create_issue(request):
     if request.method == "POST":
         form = CreateIssueForm(request.POST)
         if form.is_valid():
-            # TODO для неавторизованного пользователя нужно запоминать email в сессии
             issue = form.save()
             request.session['email'] = issue.author_email
             url = issue.get_absolute_url()
@@ -86,7 +112,7 @@ def create_issue(request):
         else:
             render(request, 'create_issue.html', {'form': form})
     else:
-        if request.user.is_authenticated:
+        if request.user.is_authenticated():
             initial = {
                 "author_email":request.user.email,
                 "author": request.user.username

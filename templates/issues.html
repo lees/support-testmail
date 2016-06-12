@@ -4,6 +4,17 @@
 
 <h2>Список незакрытых обращений</h2>
 
+
+<form class="form-inline">
+  {% for field in form %}
+    <div class="form-group">
+      <label for="{{ field.name }}"> {{ field.label }} </label>
+      {{field}}
+    </div>
+  {% endfor %}
+  <button style="margin-left: 5%;" type="submit" class="btn btn-default">Найти</button>
+</form>
+
 {% for issue in issues %}
 	<p>
 		<a href="{{ issue.get_absolute_url }}"> {{ issue.creation_date }} - {{ issue.subject }}</b></a>
