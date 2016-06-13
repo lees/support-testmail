@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth import logout
@@ -83,13 +84,19 @@ def issues(request):
     return render(request, 'issues.html',context)
 
 @require_GET
+@login_required
 def issue(request, pk):
     issue = get_object_or_404(Issue, id = pk)
+    if not request.user.is_staff and request.user != issue.author:
+        raise PermissionDenied
     form = PostAnswerForm( initial = {'issue_id': pk, 'solved_by': request.user.pk})
     return render(request, 'issue.html',{'issue': issue, 'form': form})
 
 @require_POST
+@login_required
 def response_issue(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
     form = PostAnswerForm(request.POST)
     if form.is_valid():
         issue = form.save()
@@ -105,8 +112,7 @@ def create_issue(request):
             issue = form.save()
             # Сохраняем почту в сессии, чтобы в следующий раз не нужно было ее заполнять
             request.session['email'] = issue.author_email
-            url = issue.get_absolute_url()
-            return HttpResponseRedirect(url)
+            return HttpResponseRedirect(reverse("issue-created"))
         else:
             render(request, 'create_issue.html', {'form': form})
     else:
@@ -118,6 +124,7 @@ def create_issue(request):
         else:
             initial = {
                 "author_email": request.session.get("email", "")}
+        print(initial)
         form = CreateIssueForm(initial = initial)
     return render(request, 'create_issue.html', {'form': form})
 
@@ -133,6 +140,5 @@ def register(request):
         'form': form,
     })
 
-def logoutview(request):
-    logout(request)
-    return HttpResponseRedirect("/")
+def issue_created(request):
+    return render(request, "issue_created.html")

@@ -8,12 +8,11 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 class CreateIssueForm(forms.Form):
-    author_email = forms.EmailField(label = u'Электронный адрес для оповещения',max_length = 100)
+    author_email = forms.EmailField(label = u'Электронный адрес для оповещения',max_length = 100, required = False)
     author = forms.IntegerField(widget=forms.HiddenInput, required = False)
     subject = forms.CharField(label = 'Тема', max_length=255)
     text = forms.CharField(label = "Текст", widget=forms.Textarea)
 
-    # TODO Сделать проверку формы на заполнения email
     # TODO Нужно подредактировать саму форму, чтобы там не было поля email для авторизованного
 
     def clean_author(self):
@@ -26,8 +25,16 @@ class CreateIssueForm(forms.Form):
             return None
         return author
 
+    def clean(self):
+        if self.cleaned_data.get('author', None):
+            return
+        if self.cleaned_data.get('author_email', None):
+            return
+        raise forms.ValidationError(u'Должен быть заполнен адрес уведомления', code = "email_empty")
+
     def save(self):
         post = Issue(**self.cleaned_data)
+        post.clean()
         post.save()
         return post
 

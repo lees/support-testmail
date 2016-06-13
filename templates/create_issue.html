@@ -11,6 +11,44 @@
 <a href="{% url 'login' %}">Войти</a>
 {% endif %}
 
-{% include "common_form.html" with submit="Зарегистрировать обращение"%}
+<form class="form-horizontal" method="post" action="{{ request.path }}">
+  {% csrf_token %}
+  <fieldset>
+    {% if not user.is_authenticated %}
+      {% with fld=form.author_email %}
+        <div class="control-group">
+          <label class="control-label">Электронный адрес для оповещения</label>
+          <div class="controls">
+            {{fld}}
+          </div>
+        </div>
+      {% endwith %}
+    {% endif %}
+
+
+    <div class="control-group">
+      {{form.author}}
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">Тема</label>
+      <div class="controls">
+        {{form.subject}}
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">Текст</label>
+      <div class="controls">
+        {{form.text}}
+      </div>
+    </div>
+
+  </fieldset>
+  <br />
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Зарегистрировать обращение</button>
+  </div>
+</form>
 
 {% endblock %}
