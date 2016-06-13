@@ -3,17 +3,55 @@
 {% block content%}
 
 <h2>Список обращений</h2>
-
 {% if user.is_staff %}
+<div class="well">
   <form class="form-inline">
-    {% for field in form %}
-      <div class="form-group">
-        <label for="{{ field.name }}"> {{ field.label }} </label>
-        {{field}}
+
+    <div class="form-group">
+      <label for="date"> Дата обращения </label>
+      <div class='input-group date' id='datetimepicker'>
+          <input id='id_date' name='date' type='text' class="form-control" />
+          <span class="input-group-addon">
+               <span class="glyphicon glyphicon-calendar"></span>
+          </span>
       </div>
-    {% endfor %}
+    </div>
+
+    <div class="form-group">
+      <label for="author"> Автор обращения </label>
+      <input id="id_author" maxlength="255" name="author" type="text">
+    </div>
+
+    <div class="form-group">
+      <label for="show_closed"> Показывать завершенные </label>
+      <input id="id_show_closed" name="show_closed" type="checkbox">
+    </div>
+
     <button style="margin-left: 5%;" type="submit" class="btn btn-default">Найти</button>
+
   </form>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#datetimepicker').datetimepicker({
+          format: 'YYYY-MM-DD',
+          locale: 'ru',
+          icons: {
+            time: 'glyphicon glyphicon-time',
+            date: 'glyphicon glyphicon-calendar',
+            up: 'glyphicon glyphicon-chevron-up',
+            down: 'glyphicon glyphicon-chevron-down',
+            previous: 'glyphicon glyphicon-chevron-left',
+            next: 'glyphicon glyphicon-chevron-right',
+            today: 'glyphicon glyphicon-screenshot',
+            clear: 'glyphicon glyphicon-trash',
+            close: 'glyphicon glyphicon-remove'
+          }
+        });
+    });
+</script>
+
 {% endif %}
 
 {% for issue in issues %}

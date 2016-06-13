@@ -5,7 +5,6 @@ from .models import Issue
 from django.contrib.auth.models import User
 from datetime import datetime
 from django.core.mail import send_mail
-#from support.settings import settings
 from django.conf import settings
 
 class CreateIssueForm(forms.Form):
