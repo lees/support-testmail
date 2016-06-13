@@ -67,7 +67,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update
     sudo apt-get install -y python-pip
-    sudo pip install django pytz
+    sudo pip install django pytz pep8
   SHELL
 
 end
