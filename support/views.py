@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator, EmptyPage
+from django.core.urlresolvers import reverse
+from django.shortcuts import render, get_object_or_404
 from django.http import Http404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
-from django.core.paginator import Paginator, EmptyPage
-from django.core.urlresolvers import reverse
-from .models import Issue
 from django.contrib.auth.models import User
+from .models import Issue
 from .forms import CreateIssueForm, RegisterForm, SearchIssueForm, PostAnswerForm
-from django.views import generic
 
 
 @require_GET
@@ -78,7 +77,6 @@ def issues(request):
     issues = issues.order_by('-creation_date')
     issues = paginate(request, issues)
     issues.paginator.baseurl = get_base_url(request.GET.copy())
-    print(request.GET.copy())
     form = SearchIssueForm(initial=request.GET)
     context = {
         'issues': issues,
