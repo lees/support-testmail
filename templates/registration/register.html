@@ -2,26 +2,6 @@
 
 {% block content%}
 
-{% for e in form.non_field_errors %}
-  <div class="alert alert-danger">{{ e }}</div>
-{% endfor %}
-
-<form class="form-horizontal" method="post" action="{% url 'register' %}">
-  {% csrf_token %}
-<fieldset>
-    {% for field in form %}
-      <div class="control-group
-        {% if field.errors %}has-error{% endif %}">
-        <label class="control-label">{{ field.label }}</label>
-        <div class="controls">{{ field }} {% if field.errors %}{{field.errors.0}}{% endif %}</div>
-
-</div>
-    {% endfor %}
-  </fieldset>
-  <br />
-  <div class="form-actions">
-    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
-  </div>
-</form>
+{% include "common_form.html" with submit="Зарегистрировться"%}
 
 {% endblock %}

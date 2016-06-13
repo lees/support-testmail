@@ -52,7 +52,7 @@ def get_base_url(params):
 def parse_search_params(params):
     issues = Issue.objects.all()
     show_closed = params.get('show_closed',None)
-    if not (show_closed and show_closed == 'on'):
+    if show_closed != 'on':
         issues = issues.filter(solved = False)
     author = params.get('author', None)
     if author:

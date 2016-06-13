@@ -3,14 +3,9 @@
 
 {% block content %}
 
-<form method="post" action=".">
-  {% csrf_token %}
-  {{ form.as_p }}
-
-  <input type="submit" value="Вход" />
-  <input type="hidden" name="next" value="{{ next }}" />
-</form>
+{% include "common_form.html" with submit="Вход"%}
 
 <p>Забыли пароль? <a href="{% url 'password_reset' %}">Сбросьте его</a>!</p>
-{#<p>Нет аккаунта? <a href="{% url 'registration_register' %}">Зарегистрируйтесь</a>!</p>#}
+<p>Нет аккаунта? <a href="{% url 'register' %}">Зарегистрируйтесь</a>!</p>
+
 {% endblock %}

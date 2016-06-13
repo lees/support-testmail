@@ -60,15 +60,16 @@ class SearchIssueForm(forms.Form):
     show_closed = forms.BooleanField(label=u"Показывать завершенные")
 
 class RegisterForm(forms.Form):
-    name = forms.CharField(max_length=100)
-    email = forms.EmailField(max_length=100)
-    password = forms.CharField(widget=forms.PasswordInput)
-    password_confirm = forms.CharField(widget=forms.PasswordInput)
+    name = forms.CharField(label = "Имя полльзователя", max_length = 100)
+    email = forms.EmailField(label = "Адрес электронной почты", max_length = 100)
+    password = forms.CharField(label = "Пароль", widget = forms.PasswordInput)
+    password_confirm = forms.CharField(label = "Подтверждение пароля", widget = forms.PasswordInput)
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email = email).exists():
-            raise forms.ValidationError(u'Пользователь с таким email уже существует', code = "email_exist")
+            error = forms.ValidationError(u'Пользователь с таким email уже существует', code = "email_exist")
+            self.add_error('email', error)
         return email
 
     def clean_password(self):
@@ -76,7 +77,6 @@ class RegisterForm(forms.Form):
         if len(password) < 8:
             error = forms.ValidationError(u'Пароль должен состоять минимум из 8 символов', code = "short_password")
             self.add_error('password', error)
-            return password
         return password
 
     def clean(self):
