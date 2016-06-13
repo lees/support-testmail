@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h2>Карточка пользователя "{{user_profile.username}}"</h2>
+<br />
+<p>Адрес для уведомлений: {{user_profile.email}}</p>
+<p>Последний раз был на сайте: {{user_profile.last_login}}</p>
+<p>Зарегистрировано обращений: {{issues}}</p>
+
+{% endblock %}

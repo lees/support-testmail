@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth import logout
@@ -91,6 +92,19 @@ def issue(request, pk):
         raise PermissionDenied
     form = PostAnswerForm( initial = {'issue_id': pk, 'solved_by': request.user.pk})
     return render(request, 'issue.html',{'issue': issue, 'form': form})
+
+@require_GET
+@login_required
+def account(request, pk):
+    try:
+        pk = int(pk)
+    except ValueError:
+        raise Http404
+    if not request.user.is_staff and request.user.pk != pk:
+        raise PermissionDenied
+    user = get_object_or_404(User, id = pk)
+    issues = Issue.objects.filter(author = user).count()
+    return render(request, 'user_profile.html',{'user_profile': user, 'issues': issues})
 
 @require_POST
 @login_required
