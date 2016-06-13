@@ -31,10 +31,21 @@ class CreateIssueForm(forms.Form):
         post.save()
         return post
 
+
 class PostAnswerForm(forms.Form):
     issue_id = forms.DecimalField(widget=forms.HiddenInput)
-    solved_by = forms.CharField(max_length=255, widget=forms.HiddenInput)
+    solved_by = forms.IntegerField(widget=forms.HiddenInput)
     response_text = forms.CharField(label = 'Текст ответа', widget=forms.Textarea)
+
+    def clean_solved_by(self):
+        solved_by = self.cleaned_data.get("solved_by", None)
+        if not solved_by:
+            raise forms.ValidationError(u'Невозможно определить сотрудника, давшего ответ', code = "empty_solved_by")
+        try:
+            solved_by = User.objects.get(id = solved_by)
+        except User.DoesNotExist:
+            return None
+        return solved_by
 
     def save(self):
         issue_id = self.cleaned_data.get('issue_id',None)
@@ -67,6 +78,7 @@ class SearchIssueForm(forms.Form):
     author = forms.CharField(label=u"Автор обращения", max_length=255)
     show_closed = forms.BooleanField(label=u"Показывать завершенные")
 
+
 class RegisterForm(forms.Form):
     name = forms.CharField(label = "Имя полльзователя", max_length = 100)
     email = forms.EmailField(label = "Адрес электронной почты", max_length = 100)
@@ -91,7 +103,8 @@ class RegisterForm(forms.Form):
         password = self.cleaned_data.get('password')
         password_confirm = self.cleaned_data.get('password_confirm')
         if password != password_confirm:
-            raise forms.ValidationError(u'Пароль и подтверждение пароля не совпадают', code = "passwords_differ")
+            error = forms.ValidationError(u'Пароль и подтверждение пароля должны совпадать', code = "passwords_differ")
+            self.add_error('password', error)
 
     def save(self):
         name = self.cleaned_data['name']

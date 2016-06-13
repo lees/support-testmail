@@ -73,6 +73,7 @@ def issues(request):
     issues = issues.order_by('-creation_date')
     issues = paginate(request, issues)
     issues.paginator.baseurl = get_base_url(request.GET.copy())
+    print(request.GET.copy())
     form = SearchIssueForm(initial = request.GET)
     context = {
         'issues': issues,
@@ -84,7 +85,7 @@ def issues(request):
 @require_GET
 def issue(request, pk):
     issue = get_object_or_404(Issue, id = pk)
-    form = PostAnswerForm( initial = {'issue_id': pk, 'solved_by': request.user.username})
+    form = PostAnswerForm( initial = {'issue_id': pk, 'solved_by': request.user.pk})
     return render(request, 'issue.html',{'issue': issue, 'form': form})
 
 @require_POST

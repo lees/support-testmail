@@ -10,7 +10,7 @@
     <div class="form-group">
       <label for="date"> Дата обращения </label>
       <div class='input-group date' id='datetimepicker'>
-          <input id='id_date' name='date' type='text' class="form-control" />
+          <input id='id_date' name='date' type='text' class="form-control" value="{{form.date.value}}"/>
           <span class="input-group-addon">
                <span class="glyphicon glyphicon-calendar"></span>
           </span>
@@ -19,12 +19,12 @@
 
     <div class="form-group">
       <label for="author"> Автор обращения </label>
-      <input id="id_author" maxlength="255" name="author" type="text">
+      <input id="id_author" maxlength="255" name="author" class="form-control" type="text" value={{form.author.value}}>
     </div>
 
     <div class="form-group">
       <label for="show_closed"> Показывать завершенные </label>
-      <input id="id_show_closed" name="show_closed" type="checkbox">
+      {{form.show_closed}}
     </div>
 
     <button style="margin-left: 5%;" type="submit" class="btn btn-default">Найти</button>
