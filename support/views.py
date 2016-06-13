@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
 from .models import Issue
-from django.db.models import Q
+from django.contrib.auth.models import User
 from .forms import CreateIssueForm, RegisterForm, SearchIssueForm, PostAnswerForm
 from django.views import generic
 
@@ -56,7 +56,8 @@ def parse_search_params(params):
         issues = issues.filter(solved = False)
     author = params.get('author', None)
     if author:
-        issues = issues.filter(Q(author__icontains = author) | Q(author_email__icontains = author))
+        users = User.objects.filter(username__contains = author)
+        issues = issues.filter(author__in = users)
     date = params.get('date', None)
     if date:
         issues = issues.filter(creation_date__date = date)
@@ -68,7 +69,7 @@ def issues(request):
     if request.user.is_staff:
         issues = parse_search_params(request.GET)
     else:
-        issues = Issue.objects.filter(author = request.user.username)
+        issues = Issue.objects.filter(author = request.user)
     issues = issues.order_by('-creation_date')
     issues = paginate(request, issues)
     issues.paginator.baseurl = get_base_url(request.GET.copy())
@@ -97,13 +98,11 @@ def response_issue(request):
 
 def create_issue(request):
     if request.method == "POST":
-        print(1)
         form = CreateIssueForm(request.POST)
-        print(2)
         print(form.errors)
         if form.is_valid():
-            print(3)
             issue = form.save()
+            # Сохраняем почту в сессии, чтобы в следующий раз не нужно было ее заполнять
             request.session['email'] = issue.author_email
             url = issue.get_absolute_url()
             return HttpResponseRedirect(url)
@@ -113,7 +112,7 @@ def create_issue(request):
         if request.user.is_authenticated():
             initial = {
                 "author_email":request.user.email,
-                "author": request.user.username
+                "author": request.user.pk
                 }
         else:
             initial = {

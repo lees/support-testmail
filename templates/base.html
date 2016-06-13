@@ -4,13 +4,7 @@
 	<meta name="title" content="Поддержка" />
 	<meta name="title" content="Оставье свой отзыв или замечание" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!--
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-  <script src = "https://code.jquery.com/jquery-1.12.4.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-  -->
+
   <style>
   @font-face {
   font-family: 'Glyphicons Halflings';
@@ -21,7 +15,6 @@
 
   <link rel="stylesheet" href="{% static "bootstrap.min.css" %}">
   <script src = "{% static "jquery-1.12.4.min.js" %}"></script>
-  <!-- <script src = "{% static "moment.min.js" %}"></script> -->
   <script src = "{% static "moment-with-locales.min.js" %}"></script>
   <script src = "{% static "bootstrap.min.js" %}"></script>
   <script src = "{% static "transition.js" %}"></script>
@@ -73,11 +66,6 @@
 		<br /><br /><br /><br />
 
 		<div class="container theme-showcase" role="main">
-
-
-
-
-
 			{% block content %}
 			<p>Привет, {{ user }}. Auth: {{user.is_authenticated}}, Staff : {{user.is_staff}} </p>
 
@@ -89,4 +77,5 @@
 			<p><a href="{% url 'logout' %}">logout</a></p>
 			{% endblock %}
 	  </div>
+    
 </body>

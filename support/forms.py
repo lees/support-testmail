@@ -9,12 +9,22 @@ from django.conf import settings
 
 class CreateIssueForm(forms.Form):
     author_email = forms.EmailField(label = u'Электронный адрес для оповещения',max_length = 100)
-    author = forms.CharField(max_length=255, widget=forms.HiddenInput, required = False)
+    author = forms.IntegerField(widget=forms.HiddenInput, required = False)
     subject = forms.CharField(label = 'Тема', max_length=255)
     text = forms.CharField(label = "Текст", widget=forms.Textarea)
 
     # TODO Сделать проверку формы на заполнения email
     # TODO Нужно подредактировать саму форму, чтобы там не было поля email для авторизованного
+
+    def clean_author(self):
+        author = self.cleaned_data.get("author", None)
+        if not author:
+            return None
+        try:
+            author = User.objects.get(id = author)
+        except User.DoesNotExist:
+            return None
+        return author
 
     def save(self):
         post = Issue(**self.cleaned_data)
@@ -28,7 +38,6 @@ class PostAnswerForm(forms.Form):
 
     def save(self):
         issue_id = self.cleaned_data.get('issue_id',None)
-        print('issue_id', issue_id)
         if not issue_id:
             return
         try:
