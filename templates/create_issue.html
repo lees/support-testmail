@@ -2,31 +2,15 @@
 
 {% block content%}
 
-{% for e in form.non_field_errors %}
-  <div class="alert alert-danger">{{ e }}</div>
-{% endfor %}
+<h2>Регистрация обращения</h2>
 
-<form class="form-horizontal" method="post" action="{% url 'create-issue' %}">
-  {% csrf_token %}
-  <fieldset>
-    {% for field in form %}
-      {% if field.is_hidden %}
-        <div class="control-group">
-          <div class="controls">{{ field }}</div>
-        </div>
-      {% else %}
-        <div class="control-group">
-          <label class="control-label">{{ field.label }}</label>
-          <div class="controls">{{ field }}</div>
-        </div>
-      {% endif %}
-    {% endfor %}
-  </fieldset>
-  <br />
-  <div class="form-actions">
-    <button type="submit" class="btn btn-primary">
-    Сохранить</button>
-  </div>
-</form>
+{% if user.is_authenticated %}
+<p> Обращение будет зарегистрировано от имени: {{user.username}}</p>
+{% else %}
+<p> Вы собираетесь зарегистрировать анонимное обращение. Если у вас уже есть аккаунт на сайте, то вы можете войти на сайт.</p>
+<a href="{% url 'login' %}">Войти</a>
+{% endif %}
+
+{% include "common_form.html" with submit="Зарегистрировать обращение"%}
 
 {% endblock %}
