@@ -14,8 +14,13 @@ class CreateIssueForm(forms.Form):
             max_length=100,
             required=False)
     author = forms.IntegerField(widget=forms.HiddenInput, required=False)
-    subject = forms.CharField(label='Тема', max_length=255)
-    text = forms.CharField(label="Текст", widget=forms.Textarea)
+    subject = forms.CharField(
+                label='Тема',
+                max_length=255,
+                widget=forms.TextInput(attrs={'size': 80}))
+    text = forms.CharField(
+            label="Текст",
+            widget=forms.Textarea(attrs={'cols': 80}))
 
     def clean_author(self):
         author = self.cleaned_data.get("author", None)
@@ -48,7 +53,7 @@ class PostAnswerForm(forms.Form):
     solved_by = forms.IntegerField(widget=forms.HiddenInput)
     response_text = forms.CharField(
             label='Текст ответа',
-            widget=forms.Textarea)
+            widget=forms.Textarea(attrs = {'cols':80}))
 
     def clean_solved_by(self):
         solved_by = self.cleaned_data.get("solved_by", None)

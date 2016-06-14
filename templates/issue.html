@@ -23,11 +23,10 @@
     <form class="form-horizontal" method="post" action="{% url 'response-issue' %}">
       {% csrf_token %}
       Текст ответа
-      {% for field in form %}
-          <div class="control-group">
-            <div class="controls">{{ field }}</div>
-          </div>
-      {% endfor %}
+      <div class="controls">
+        {{form.response_text}}
+      </div>
+
       <br />
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">
