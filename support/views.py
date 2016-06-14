@@ -73,7 +73,7 @@ def issues(request):
     if request.user.is_staff:
         issues = parse_search_params(request.GET)
     else:
-        issues = Issue.objects.filter(author=request.user)
+        issues = request.user.issue_author
     issues = issues.order_by('-creation_date')
     issues = paginate(request, issues)
     issues.paginator.baseurl = get_base_url(request.GET.copy())

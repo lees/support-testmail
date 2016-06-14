@@ -9,7 +9,7 @@
     {% for field in form %}
       <div class="control-group">
         {%if not field.is_hidden %}
-        <label class="control-label">{{ field.label }}</label>
+        {{ field.label_tag }}
         {% endif %}
         <div class="controls">{{ field }} {% if field.errors %}{{field.errors.0}}{% endif %}</div>
       </div>

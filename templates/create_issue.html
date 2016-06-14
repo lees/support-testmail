@@ -18,6 +18,7 @@
       {% with fld=form.author_email %}
         <div class="control-group">
           <label class="control-label">Электронный адрес для оповещения</label>
+          {{ fld.label_tag }}
           <div class="controls">
             {{fld}}
           </div>
