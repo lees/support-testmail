@@ -22,6 +22,8 @@
 	{% elif user.is_staff %}
     <form class="form-horizontal" method="post" action="{% url 'response-issue' %}">
       {% csrf_token %}
+      {{form.issue_id}}
+      {{form.solved_by}}
       Текст ответа
       <div class="controls">
         {{form.response_text}}
