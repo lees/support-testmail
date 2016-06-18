@@ -41,7 +41,8 @@
 				<div id="navbar" class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
 						{% if user.is_staff %}
-							<li><a class="nav-button" href="/admin/">Админка</a></li>
+              <li><a class="nav-button" href="{% url 'issues' %}">Обращения</a></li>
+              <li><a class="nav-button" href="/admin/">Админка</a></li>
             {% else %}
               <li><a class="nav-button" href="{% url 'create-issue' %}">Создать обращение</a></li>
 						{% endif %}
