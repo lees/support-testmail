@@ -13,14 +13,6 @@ from django.contrib.auth.models import User
 from .models import Issue
 from .forms import CreateIssueForm, RegisterForm, SearchIssueForm, PostAnswerForm
 
-
-@require_GET
-def root(request):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('create-issue'))
-    return HttpResponseRedirect(reverse('issues'))
-
-
 def paginate(request, qs):
     try:
         limit = int(request.GET.get('limit', 10))
@@ -83,7 +75,7 @@ def issues(request):
         'paginator': issues.paginator,
         'form': form
     }
-    return render(request, 'issues.html', context)
+    return render(request, 'support/issues.html', context)
 
 
 @require_GET
@@ -94,22 +86,7 @@ def issue(request, pk):
         raise PermissionDenied
     initial = {'issue_id': pk, 'solved_by': request.user.pk}
     form = PostAnswerForm(initial=initial)
-    return render(request, 'issue.html', {'issue': issue, 'form': form})
-
-
-@require_GET
-@login_required
-def account(request, pk):
-    try:
-        pk = int(pk)
-    except ValueError:
-        raise Http404
-    if not request.user.is_staff and request.user.pk != pk:
-        raise PermissionDenied
-    user = get_object_or_404(User, id=pk)
-    issues = Issue.objects.filter(author=user).count()
-    context = {'user_profile': user, 'issues': issues}
-    return render(request, 'user_profile.html', context)
+    return render(request, 'support/issue.html', {'issue': issue, 'form': form})
 
 
 @require_POST
@@ -128,14 +105,11 @@ def response_issue(request):
 def create_issue(request):
     if request.method == "POST":
         form = CreateIssueForm(request.POST)
-        print(form.errors)
         if form.is_valid():
             issue = form.save()
             # Сохраняем почту в сессии, чтобы заполнять ее один раз
             request.session['email'] = issue.author_email
             return HttpResponseRedirect(reverse("issue-created"))
-        else:
-            render(request, 'create_issue.html', {'form': form})
     else:
         if request.user.is_authenticated():
             initial = {
@@ -145,23 +119,9 @@ def create_issue(request):
         else:
             initial = {
                 "author_email": request.session.get("email", "")}
-        print(initial)
         form = CreateIssueForm(initial=initial)
-    return render(request, 'create_issue.html', {'form': form})
-
-
-def register(request):
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            new_user = form.save()
-            return HttpResponseRedirect("/")
-    else:
-        form = RegisterForm()
-    return render(request, "registration/register.html", {
-        'form': form,
-    })
+    return render(request, 'support/create_issue.html', {'form': form})
 
 
 def issue_created(request):
-    return render(request, "issue_created.html")
+    return render(request, "support/issue_created.html")
