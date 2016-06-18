@@ -55,7 +55,7 @@
 {% endif %}
 
 {% for issue in issues %}
-  <div class="panel panel-default">
+  <div class="panel {% if issue.solved %} panel-success {% else %} panel-info {% endif %}">
     <div class="panel-heading">
       <h3 class="panel-title">
         <a href="{{ issue.get_absolute_url }}">
