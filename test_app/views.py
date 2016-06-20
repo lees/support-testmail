@@ -2,11 +2,11 @@
 
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-#from ..support.models import Issues
+from django.contrib.auth.models import User
 
 @require_GET
 def root(request):
@@ -25,8 +25,6 @@ def account(request, pk):
     if not request.user.is_staff and request.user.pk != pk:
         raise PermissionDenied
     user = get_object_or_404(User, id=pk)
-    # TODO fix or delete
-    #issues = Issue.objects.filter(author=user).count()
     issues = 0
     context = {'user_profile': user, 'issues': issues}
     return render(request, 'support/user_profile.html', context)
